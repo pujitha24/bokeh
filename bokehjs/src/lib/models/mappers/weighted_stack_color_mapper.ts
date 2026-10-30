@@ -121,7 +121,7 @@ export class WeightedStackColorMapper extends StackColorMapper {
     // Calculate alphas using alpha_mapper.
     const alpha_palette = convert_to_uint32_palette(this.alpha_mapper.palette)
     const alphas = new Uint32Array(n)
-    this.alpha_mapper._v_compute(totals, alphas, alpha_palette, colors)
+    this.alpha_mapper.map_into(totals, alphas, alpha_palette, colors)
 
     // Combine RGBA and alphas.
     for (let i = 0; i < n; i++) {
