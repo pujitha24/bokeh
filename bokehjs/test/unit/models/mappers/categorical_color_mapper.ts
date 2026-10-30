@@ -6,6 +6,13 @@ import type {L2Factor as F2, L3Factor as F3} from "@bokehjs/models/ranges/factor
 
 describe("CategoricalColorMapper module", () => {
 
+  it("should not allow negative start and end", () => {
+    const palette = ["red", "green"]
+    const factors = ["a", "b"]
+    expect(() => CategoricalColorMapper.create({palette, factors, start: -1})).to.throw()
+    expect(() => CategoricalColorMapper.create({palette, factors, end: -1})).to.throw()
+  })
+
   describe("CategoricalColorMapper.v_compute method", () => {
 
     describe("with 1-level data factors", () => {

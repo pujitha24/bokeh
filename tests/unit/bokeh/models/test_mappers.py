@@ -46,6 +46,13 @@ class Test_CategoricalColorMapper:
             "nan_color",
         ])
 
+    def test_negative_start_end(self) -> None:
+        mapper = bmm.CategoricalColorMapper()
+        with pytest.raises(ValueError):
+            mapper.start = -1
+        with pytest.raises(ValueError):
+            mapper.end = -1
+
     @patch("bokeh.core.validation.check.log.error")
     @patch("bokeh.core.validation.check.log.warning")
     def test_warning_with_short_palette(self, mock_warn: MagicMock, mock_error: MagicMock) -> None:

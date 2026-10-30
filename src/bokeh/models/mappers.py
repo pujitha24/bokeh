@@ -34,6 +34,7 @@ from ..core.property.enum import Enum
 from ..core.property.factors import FactorSeq
 from ..core.property.instance import Instance
 from ..core.property.nullable import Nullable
+from ..core.property.numeric import NonNegative
 from ..core.property.primitive import (
     Bool,
     Float,
@@ -116,7 +117,7 @@ class CategoricalMapper(Mapper):
     will map the factor ``"foo"`` to red and the factor ``"bar"`` to blue.
     """)
 
-    start = Int(default=0, help="""
+    start = NonNegative(Int, default=0, help="""
     A start index to "slice" data factors with before mapping.
 
     For example, if the data to color map consists of 2-level factors such
@@ -125,7 +126,7 @@ class CategoricalMapper(Mapper):
     (i.e. in this case based on the department ``"sales"`` or ``"marketing"``)
     """)
 
-    end = Nullable(Int, help="""
+    end = Nullable(NonNegative(Int), help="""
     A start index to "slice" data factors with before mapping.
 
     For example, if the data to color map consists of 2-level factors such
