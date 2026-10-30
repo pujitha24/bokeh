@@ -19,10 +19,10 @@ export class CategoricalColorMapper extends ColorMapper {
   declare properties: CategoricalColorMapper.Props
 
   static {
-    this.define<CategoricalColorMapper.Props>(({Float, Nullable}) => ({
+    this.define<CategoricalColorMapper.Props>(({Int, Nullable}) => ({
       factors: [ FactorSeq ],
-      start:   [ Float, 0 ],
-      end:     [ Nullable(Float), null ],
+      start:   [ Int, 0 ],
+      end:     [ Nullable(Int), null ],
     }))
   }
 
