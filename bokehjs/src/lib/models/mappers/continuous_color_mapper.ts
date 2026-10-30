@@ -6,6 +6,15 @@ import {GlyphRenderer} from "../renderers/glyph_renderer"
 import {map, intersection, is_empty} from "core/util/array"
 import {isNumber, isArray} from "core/util/types"
 
+// Plain arrays can contain nulls, which behave like zeros in numeric comparisons.
+function nulls_to_nan(data: Arrayable<number | null>): Arrayable<number> {
+  if (isArray<number | null>(data) && data.includes(null)) {
+    return data.map((value) => value ?? NaN)
+  } else {
+    return data as Arrayable<number>
+  }
+}
+
 export namespace ContinuousColorMapper {
   export type Attrs = p.AttrsOf<Props>
 
@@ -115,9 +124,10 @@ export abstract class ContinuousColorMapper extends ColorMapper {
 
   protected abstract scan(data: Arrayable<number>, n: number): {min: number, max: number}
 
-  public _v_compute(data: Arrayable<number>, values: Arrayable<uint32>,
+  public _v_compute(raw_data: Arrayable<number | null>, values: Arrayable<uint32>,
       palette: Arrayable<uint32>, colors: {nan_color: uint32, low_color?: uint32, high_color?: uint32}): void {
 
+    const data = nulls_to_nan(raw_data)
     const {nan_color} = colors
     let {low_color, high_color} = colors
     if (low_color == null) {
