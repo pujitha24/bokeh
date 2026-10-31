@@ -1,3 +1,4 @@
+import type {ColorMapper} from "./color_mapper"
 import {convert_to_uint32_palette} from "./color_mapper"
 import {ContinuousColorMapper} from "./continuous_color_mapper"
 import {StackColorMapper} from "./stack_color_mapper"
@@ -29,6 +30,10 @@ export class WeightedStackColorMapper extends StackColorMapper {
       color_baseline: [ Nullable(Float), null ],
       stack_labels:   [ Nullable(List(Str)), null ],
     }))
+  }
+
+  override get display_mapper(): ColorMapper {
+    return this.alpha_mapper
   }
 
   // Weighted mix of colors.

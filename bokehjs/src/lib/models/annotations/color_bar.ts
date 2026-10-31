@@ -2,7 +2,7 @@ import {BaseColorBar, BaseColorBarView} from "./base_color_bar"
 import type {TickFormatter} from "../formatters/tick_formatter"
 import {BasicTickFormatter, LogTickFormatter, CategoricalTickFormatter} from "../formatters"
 import {ColorMapper, palette_to_rgba} from "../mappers/color_mapper"
-import {LinearColorMapper, LogColorMapper, ScanningColorMapper, CategoricalColorMapper, ContinuousColorMapper, WeightedStackColorMapper} from "../mappers"
+import {LinearColorMapper, LogColorMapper, ScanningColorMapper, CategoricalColorMapper, ContinuousColorMapper} from "../mappers"
 import type {Range} from "../ranges"
 import {Range1d, FactorRange} from "../ranges"
 import type {Scale} from "../scales"
@@ -41,11 +41,7 @@ export class ColorBarView extends BaseColorBarView {
 
   get color_mapper(): ColorMapper {
     // Color mapper that is used to render this colorbar.
-    let mapper = this.model.color_mapper
-    if (mapper instanceof WeightedStackColorMapper) {
-      mapper = mapper.alpha_mapper
-    }
-    return mapper
+    return this.model.color_mapper.display_mapper
   }
 
   override update_layout(): void {

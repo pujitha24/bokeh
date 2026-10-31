@@ -76,6 +76,11 @@ export abstract class ColorMapper extends Mapper<Color> {
     }
   }
 
+  // The mapper that defines how this mapper is displayed, e.g. in a color bar.
+  get display_mapper(): ColorMapper {
+    return this
+  }
+
   protected _colors<T>(conv: (c: Color) => T): {nan_color: T} {
     return {nan_color: conv(this.nan_color)}
   }

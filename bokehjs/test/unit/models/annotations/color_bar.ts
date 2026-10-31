@@ -3,7 +3,7 @@ import {display, fig} from "#framework/layouts"
 
 import {
   CategoricalAxis, CategoricalColorMapper, ColorBar, EqHistColorMapper,
-  LinearAxis, LinearColorMapper, LogAxis, LogColorMapper,
+  LinearAxis, LinearColorMapper, LogAxis, LogColorMapper, WeightedStackColorMapper,
 } from "@bokehjs/models"
 import type {ColorMapper} from "@bokehjs/models/mappers/color_mapper"
 import {palette_to_rgba} from "@bokehjs/models/mappers/color_mapper"
@@ -21,6 +21,18 @@ describe("ColorBar", () => {
 
       expect(color_bar.display_low).to.be.null
       expect(color_bar.display_high).to.be.null
+    })
+  })
+
+  describe("color mapper guides", () => {
+    const palette = ["#000000", "#ff0000", "#00ff00", "#0000ff"]
+    const continuous = {palette, low: 0, high: 4}
+
+    it("should use alpha_mapper of WeightedStackColorMapper", () => {
+      const alpha_mapper = LinearColorMapper.create(continuous)
+      const mapper = WeightedStackColorMapper.create({palette, alpha_mapper})
+      expect(mapper.display_mapper).to.be.equal(alpha_mapper)
+      expect(alpha_mapper.display_mapper).to.be.equal(alpha_mapper)
     })
   })
 
