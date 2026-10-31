@@ -32,6 +32,17 @@ export function palette_to_rgba(palette: Color[]): RGBAArray {
   return new Uint8ClampedArray(values.buffer)
 }
 
+// The part of a mapper that is displayed, given low and high display cutoffs.
+// `index_low` and `index_high` are indices of the first and the last displayed
+// colors, or `null` if the palette isn't cut off on that side.
+export type DisplayExtent = {
+  index_low: number | null
+  index_high: number | null
+  start?: number
+  end?: number
+  binning?: Arrayable<number>
+}
+
 export namespace ColorMapper {
   export type Attrs = p.AttrsOf<Props>
 
@@ -79,6 +90,10 @@ export abstract class ColorMapper extends Mapper<Color> {
   // The mapper that defines how this mapper is displayed, e.g. in a color bar.
   get display_mapper(): ColorMapper {
     return this
+  }
+
+  display_extent(_display_low: number | null, _display_high: number | null): DisplayExtent {
+    return {index_low: null, index_high: null}
   }
 
   protected _colors<T>(conv: (c: Color) => T): {nan_color: T} {

@@ -57,6 +57,38 @@ describe("ColorBar", () => {
     })
   })
 
+  describe("display extent", () => {
+    const palette = ["#000000", "#ff0000", "#00ff00", "#0000ff"]
+
+    it("should cut off the palette of a continuous mapper", () => {
+      const mapper = LinearColorMapper.create({palette, low: 0, high: 4})
+      expect(mapper.display_extent(null, null)).to.be.equal({index_low: null, index_high: null, start: 0, end: 4})
+      expect(mapper.display_extent(1.5, 2.5)).to.be.equal({index_low: 1, index_high: 2, start: 1, end: 3})
+      expect(mapper.display_extent(3, 1)).to.be.equal({index_low: 0, index_high: -1, start: NaN, end: NaN})
+    })
+
+    it("should cut off the binning of a scanning mapper", () => {
+      const mapper = EqHistColorMapper.create({palette})
+      mapper.v_compute([0, 1, 2, 3, 4, 5, 6, 7, 8])
+      const {binning} = mapper.metrics
+
+      const full = mapper.display_extent(null, null)
+      expect(full.index_low).to.be.null
+      expect(full.index_high).to.be.null
+      expect(full.binning).to.be.equal(binning)
+
+      const cut = mapper.display_extent(binning[1], binning[2])
+      expect(cut.index_low).to.be.equal(1)
+      expect(cut.index_high).to.be.equal(2)
+      expect(cut.binning).to.be.equal([binning[1], binning[2], binning[3]])
+
+      const empty = mapper.display_extent(3, 1)
+      expect(empty.index_low).to.be.equal(0)
+      expect(empty.index_high).to.be.equal(-1)
+      expect(empty.binning).to.be.equal([NaN])
+    })
+  })
+
   describe("palette_to_rgba()", () => {
     it("should return RGBA bytes in palette order", () => {
       const rgba = palette_to_rgba(["#010203", "#04050607"])

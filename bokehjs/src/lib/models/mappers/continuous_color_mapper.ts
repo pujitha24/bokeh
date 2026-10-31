@@ -1,3 +1,4 @@
+import type {DisplayExtent} from "./color_mapper"
 import {ColorMapper} from "./color_mapper"
 import type {Arrayable, Color, uint32} from "core/types"
 import type * as p from "core/properties"
@@ -15,6 +16,8 @@ function nulls_to_nan(data: Arrayable<number | null>): Arrayable<number> {
     return data as Arrayable<number>
   }
 }
+
+export type ContinuousDisplayExtent = DisplayExtent & {start: number, end: number}
 
 export namespace ContinuousColorMapper {
   export type Attrs = p.AttrsOf<Props>
@@ -78,6 +81,36 @@ export abstract class ContinuousColorMapper extends ColorMapper {
       this.update_data()
     }
     return this._scan_data!
+  }
+
+  override display_extent(display_low: number | null, display_high: number | null): ContinuousDisplayExtent {
+    let {min, max} = this.metrics
+
+    if (display_high != null && display_low != null && display_high < display_low) {
+      // Empty color bar.
+      return {index_low: 0, index_high: -1, start: NaN, end: NaN}
+    }
+
+    let index_high = null
+    if (display_high != null) {
+      const palette_length = this.palette.length
+      const index = this.value_to_index(display_high, palette_length)
+      if (index < palette_length-1) {
+        index_high = index
+        max = this.index_to_value(index+1)
+      }
+    }
+
+    let index_low = null
+    if (display_low != null) {
+      const index = this.value_to_index(display_low, this.palette.length)
+      if (index > 0) {
+        index_low = index
+        min = this.index_to_value(index)
+      }
+    }
+
+    return {index_low, index_high, start: min, end: max}
   }
 
   // Returns all values of the domain, avoiding a copy if there is only one column.
