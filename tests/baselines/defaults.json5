@@ -2881,7 +2881,7 @@
   },
   GroupFilter: {
     __extends__: "Filter",
-    column_name: {
+    field_name: {
       type: "symbol",
       name: "unset",
     },
@@ -5975,7 +5975,7 @@
     },
     view: {
       type: "object",
-      name: "CDSView",
+      name: "DataView",
       attributes: {
         filter: {
           type: "object",
@@ -6031,7 +6031,7 @@
         },
         view: {
           type: "object",
-          name: "CDSView",
+          name: "DataView",
           attributes: {
             filter: {
               type: "object",
@@ -6082,7 +6082,7 @@
         },
         view: {
           type: "object",
-          name: "CDSView",
+          name: "DataView",
           attributes: {
             filter: {
               type: "object",
@@ -6234,14 +6234,6 @@
       type: "map",
     },
   },
-  CDSView: {
-    __extends__: "Model",
-    filter: {
-      type: "object",
-      name: "AllIndices",
-      attributes: {},
-    },
-  },
   ColumnDataSource: {
     __extends__: "ColumnarDataSource",
     data: {
@@ -6249,21 +6241,19 @@
     },
   },
   ColumnarDataSource: {
-    __extends__: "DataSource",
+    __extends__: "IndexedDataSource",
     default_values: {
       type: "map",
-    },
-    selection_policy: {
-      type: "object",
-      name: "UnionRenderers",
-      attributes: {},
     },
   },
   DataSource: {
     __extends__: "Model",
-    selected: {
+  },
+  DataView: {
+    __extends__: "Model",
+    filter: {
       type: "object",
-      name: "Selection",
+      name: "AllIndices",
       attributes: {},
     },
   },
@@ -6272,6 +6262,19 @@
     geojson: {
       type: "symbol",
       name: "unset",
+    },
+  },
+  IndexedDataSource: {
+    __extends__: "DataSource",
+    selected: {
+      type: "object",
+      name: "Selection",
+      attributes: {},
+    },
+    selection_policy: {
+      type: "object",
+      name: "UnionRenderers",
+      attributes: {},
     },
   },
   ServerSentDataSource: {
@@ -8065,7 +8068,7 @@
     },
     view: {
       type: "object",
-      name: "CDSView",
+      name: "DataView",
       attributes: {
         filter: {
           type: "object",
