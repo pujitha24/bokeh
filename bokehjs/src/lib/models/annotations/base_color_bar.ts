@@ -5,13 +5,15 @@ import type {CartesianFrameView} from "../canvas/cartesian_frame"
 import type {Axis} from "../axes/axis"
 import {LabelOverrides} from "../axes/axis"
 import {LinearAxis} from "../axes/linear_axis"
+import {LogAxis} from "../axes/log_axis"
+import {CategoricalAxis} from "../axes/categorical_axis"
 import {Ticker} from "../tickers/ticker"
 import {BasicTicker} from "../tickers"
 import {TickFormatter} from "../formatters/tick_formatter"
 import {BasicTickFormatter} from "../formatters"
 import {LabelingPolicy, NoOverlap} from "../policies/labeling"
 import type {Scale} from "../scales"
-import {LinearScale} from "../scales"
+import {LinearScale, LogScale, CategoricalScale} from "../scales"
 import type {Range} from "../ranges"
 import {Range1d} from "../ranges"
 import {BaseText} from "../text/base_text"
@@ -520,7 +522,14 @@ export abstract class BaseColorBarView extends AnnotationView {
   }
 
   protected _create_axis(): Axis {
-    return LinearAxis.create()
+    const scale = this._major_scale
+    if (scale instanceof CategoricalScale) {
+      return CategoricalAxis.create()
+    } else if (scale instanceof LogScale) {
+      return LogAxis.create()
+    } else {
+      return LinearAxis.create()
+    }
   }
 
   protected _create_formatter(): TickFormatter {

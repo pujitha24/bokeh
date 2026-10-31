@@ -1,7 +1,13 @@
 import {expect} from "#framework/assertions"
+import {display, fig} from "#framework/layouts"
 
-import {ColorBar, LinearColorMapper} from "@bokehjs/models"
+import {
+  CategoricalAxis, CategoricalColorMapper, ColorBar, EqHistColorMapper,
+  LinearAxis, LinearColorMapper, LogAxis, LogColorMapper,
+} from "@bokehjs/models"
+import type {ColorMapper} from "@bokehjs/models/mappers/color_mapper"
 import {palette_to_rgba} from "@bokehjs/models/mappers/color_mapper"
+import {AxisView} from "@bokehjs/models/axes/axis"
 import {Spectral10} from "@bokehjs/api/palettes"
 
 describe("ColorBar", () => {
@@ -15,6 +21,27 @@ describe("ColorBar", () => {
 
       expect(color_bar.display_low).to.be.null
       expect(color_bar.display_high).to.be.null
+    })
+  })
+
+  describe("axis", () => {
+    const palette = ["#000000", "#ff0000"]
+
+    async function axis_of(color_mapper: ColorMapper) {
+      const color_bar = ColorBar.create({color_mapper})
+      const plot = fig([200, 200])
+      plot.add_layout(color_bar, "right")
+      const {view} = await display(plot)
+      const axes = view.owner.get_one(color_bar).children_views().filter((child) => child instanceof AxisView)
+      expect(axes.length).to.be.equal(1)
+      return axes[0].model
+    }
+
+    it("should be derived from the scale of the color mapper", async () => {
+      expect(await axis_of(LinearColorMapper.create({palette, low: 0, high: 1}))).to.be.instanceof(LinearAxis)
+      expect(await axis_of(LogColorMapper.create({palette, low: 1, high: 10}))).to.be.instanceof(LogAxis)
+      expect(await axis_of(EqHistColorMapper.create({palette, low: 0, high: 1}))).to.be.instanceof(LinearAxis)
+      expect(await axis_of(CategoricalColorMapper.create({palette, factors: ["a", "b"]}))).to.be.instanceof(CategoricalAxis)
     })
   })
 

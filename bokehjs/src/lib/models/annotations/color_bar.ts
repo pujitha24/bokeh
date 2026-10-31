@@ -1,6 +1,4 @@
 import {BaseColorBar, BaseColorBarView} from "./base_color_bar"
-import type {Axis} from "../axes"
-import {CategoricalAxis, LinearAxis, LogAxis} from "../axes"
 import type {TickFormatter} from "../formatters/tick_formatter"
 import {BasicTickFormatter, LogTickFormatter, CategoricalTickFormatter} from "../formatters"
 import {ColorMapper, palette_to_rgba} from "../mappers/color_mapper"
@@ -54,18 +52,6 @@ export class ColorBarView extends BaseColorBarView {
     super.update_layout()
 
     this._set_canvas_image()
-  }
-
-  override _create_axis(): Axis {
-    const {color_mapper} = this
-
-    if (color_mapper instanceof CategoricalColorMapper) {
-      return CategoricalAxis.create()
-    } else if (color_mapper instanceof LogColorMapper) {
-      return LogAxis.create()
-    } else {
-      return LinearAxis.create()
-    }
   }
 
   override _create_formatter(): TickFormatter {
