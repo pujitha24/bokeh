@@ -25,6 +25,13 @@ export function convert_to_uint32_palette(palette: Color[]): Uint32Array {
   return new_palette
 }
 
+// Converts a palette to RGBA bytes, one color per pixel, in palette order.
+export function palette_to_rgba(palette: Color[]): RGBAArray {
+  const values = convert_to_uint32_palette(palette)
+  to_big_endian(values)
+  return new Uint8ClampedArray(values.buffer)
+}
+
 export namespace ColorMapper {
   export type Attrs = p.AttrsOf<Props>
 

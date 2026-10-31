@@ -3,7 +3,7 @@ import type {Axis} from "../axes"
 import {CategoricalAxis, LinearAxis, LogAxis} from "../axes"
 import type {TickFormatter} from "../formatters/tick_formatter"
 import {BasicTickFormatter, LogTickFormatter, CategoricalTickFormatter} from "../formatters"
-import {ColorMapper} from "../mappers/color_mapper"
+import {ColorMapper, palette_to_rgba} from "../mappers/color_mapper"
 import {LinearColorMapper, LogColorMapper, ScanningColorMapper, CategoricalColorMapper, ContinuousColorMapper, WeightedStackColorMapper} from "../mappers"
 import type {Range} from "../ranges"
 import {Range1d, FactorRange} from "../ranges"
@@ -13,7 +13,7 @@ import type {Ticker} from "../tickers/ticker"
 import {BasicTicker, LogTicker, BinnedTicker, CategoricalTicker} from "../tickers"
 import type * as p from "core/properties"
 import type {Arrayable} from "core/types"
-import {range, reversed} from "core/util/array"
+import {reversed} from "core/util/array"
 import {unreachable} from "core/util/assert"
 import type {BBox} from "core/util/bbox"
 import type {Context2d} from "core/util/canvas"
@@ -308,12 +308,7 @@ export class ColorBarView extends BaseColorBarView {
     const image_ctx = canvas.getContext("2d")!
     const image_data = image_ctx.getImageData(0, 0, w, h)
 
-    // We always want to draw the entire palette linearly, so we create a new
-    // LinearColorMapper instance and map a monotonic range of values with
-    // length = palette.length to get each palette color in order.
-    const cmap = LinearColorMapper.create({palette}).rgba_mapper
-    const buf8 = cmap.v_compute(range(0, palette.length))
-    image_data.data.set(buf8)
+    image_data.data.set(palette_to_rgba(palette))
     image_ctx.putImageData(image_data, 0, 0)
   }
 }
