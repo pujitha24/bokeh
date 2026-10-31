@@ -4,6 +4,8 @@ import type {Arrayable, Color, uint32} from "core/types"
 import type * as p from "core/properties"
 
 import {GlyphRenderer} from "../renderers/glyph_renderer"
+import type {Range} from "../ranges/range"
+import {Range1d} from "../ranges/range1d"
 import {map, intersection, is_empty} from "core/util/array"
 import {sum} from "core/util/arrayable"
 import {isNumber, isArray} from "core/util/types"
@@ -81,6 +83,10 @@ export abstract class ContinuousColorMapper extends ColorMapper {
       this.update_data()
     }
     return this._scan_data!
+  }
+
+  override create_range({start, end}: ContinuousDisplayExtent): Range {
+    return Range1d.create({start, end})
   }
 
   override display_extent(display_low: number | null, display_high: number | null): ContinuousDisplayExtent {

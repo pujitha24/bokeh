@@ -1,4 +1,6 @@
 import {ContinuousColorMapper} from "./continuous_color_mapper"
+import type {Scale} from "../scales/scale"
+import {LinearScale} from "../scales/linear_scale"
 import type {Arrayable, uint32} from "core/types"
 import {min, max, minmax} from "core/util/arrayable"
 import {clamp} from "core/util/math"
@@ -21,6 +23,10 @@ export interface LinearColorMapper extends LinearColorMapper.Attrs {}
 
 export class LinearColorMapper extends ContinuousColorMapper {
   declare properties: LinearColorMapper.Props
+
+  override create_scale(): Scale {
+    return LinearScale.create()
+  }
 
   protected scan(data: Arrayable<number>, n: number): LinearScanData {
     const [low, high] = (() => {

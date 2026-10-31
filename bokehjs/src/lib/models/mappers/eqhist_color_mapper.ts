@@ -1,5 +1,7 @@
 import type {ScanningScanData} from "./scanning_color_mapper"
 import {ScanningColorMapper} from "./scanning_color_mapper"
+import type {Ticker} from "../tickers/ticker"
+import {BinnedTicker} from "../tickers/binned_ticker"
 import type {Arrayable} from "core/types"
 import {min, max, bin_counts, interpolate, sorted_index} from "core/util/arrayable"
 import {linspace, cumsum} from "core/util/array"
@@ -24,6 +26,10 @@ export class EqHistColorMapper extends ScanningColorMapper {
       bins:                    [ Int, 256*256 ],
       rescale_discrete_levels: [ Bool, false ],
     }))
+  }
+
+  override create_ticker(): Ticker {
+    return BinnedTicker.create({mapper: this})
   }
 
   // Public for unit tests

@@ -2,8 +2,12 @@ import {expect} from "#framework/assertions"
 import {display, fig} from "#framework/layouts"
 
 import {
-  CategoricalAxis, CategoricalColorMapper, ColorBar, EqHistColorMapper,
-  LinearAxis, LinearColorMapper, LogAxis, LogColorMapper, WeightedStackColorMapper,
+  BasicTickFormatter, BasicTicker, BinnedTicker,
+  CategoricalAxis, CategoricalColorMapper, CategoricalScale, CategoricalTickFormatter, CategoricalTicker,
+  ColorBar, EqHistColorMapper, FactorRange,
+  LinearAxis, LinearColorMapper, LinearInterpolationScale, LinearScale,
+  LogAxis, LogColorMapper, LogScale, LogTicker,
+  Range1d, WeightedStackColorMapper,
 } from "@bokehjs/models"
 import type {ColorMapper} from "@bokehjs/models/mappers/color_mapper"
 import {palette_to_rgba} from "@bokehjs/models/mappers/color_mapper"
@@ -27,6 +31,47 @@ describe("ColorBar", () => {
   describe("color mapper guides", () => {
     const palette = ["#000000", "#ff0000", "#00ff00", "#0000ff"]
     const continuous = {palette, low: 0, high: 4}
+
+    it("should support LinearColorMapper", () => {
+      const mapper = LinearColorMapper.create(continuous)
+      const extent = mapper.display_extent(null, null)
+      expect(mapper.create_ticker()).to.be.instanceof(BasicTicker)
+      expect(mapper.create_formatter()).to.be.instanceof(BasicTickFormatter)
+      expect(mapper.create_range(extent)).to.be.instanceof(Range1d)
+      expect(mapper.create_scale()).to.be.instanceof(LinearScale)
+    })
+
+    it("should support LogColorMapper", () => {
+      const mapper = LogColorMapper.create({palette, low: 1, high: 16})
+      const extent = mapper.display_extent(null, null)
+      expect(mapper.create_ticker()).to.be.instanceof(LogTicker)
+      expect(mapper.create_formatter()).to.be.instanceof(BasicTickFormatter)
+      expect(mapper.create_range(extent)).to.be.instanceof(Range1d)
+      expect(mapper.create_scale()).to.be.instanceof(LogScale)
+    })
+
+    it("should support EqHistColorMapper", () => {
+      const mapper = EqHistColorMapper.create(continuous)
+      const extent = mapper.display_extent(null, null)
+      const ticker = mapper.create_ticker() as BinnedTicker
+      expect(ticker).to.be.instanceof(BinnedTicker)
+      expect(ticker.mapper).to.be.equal(mapper)
+      expect(mapper.create_formatter()).to.be.instanceof(BasicTickFormatter)
+      expect(mapper.create_range(extent)).to.be.instanceof(Range1d)
+      expect(mapper.create_scale(extent)).to.be.instanceof(LinearInterpolationScale)
+    })
+
+    it("should support CategoricalColorMapper", () => {
+      const mapper = CategoricalColorMapper.create({palette, factors: ["a", "b"]})
+      const extent = mapper.display_extent(null, null)
+      const range = mapper.create_range()
+      expect(mapper.create_ticker()).to.be.instanceof(CategoricalTicker)
+      expect(mapper.create_formatter()).to.be.instanceof(CategoricalTickFormatter)
+      expect(range).to.be.instanceof(FactorRange)
+      expect((range as FactorRange).factors).to.be.equal(["a", "b"])
+      expect(mapper.create_scale()).to.be.instanceof(CategoricalScale)
+      expect(extent).to.be.equal({index_low: null, index_high: null})
+    })
 
     it("should use alpha_mapper of WeightedStackColorMapper", () => {
       const alpha_mapper = LinearColorMapper.create(continuous)

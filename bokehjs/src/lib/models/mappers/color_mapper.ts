@@ -1,9 +1,16 @@
 import {Mapper} from "./mapper"
 import type {Factor} from "../ranges/factor_range"
+import type {TickFormatter} from "../formatters/tick_formatter"
+import {BasicTickFormatter} from "../formatters/basic_tick_formatter"
+import type {Range} from "../ranges/range"
+import type {Scale} from "../scales/scale"
+import type {Ticker} from "../tickers/ticker"
+import {BasicTicker} from "../tickers/basic_ticker"
 import type * as p from "core/properties"
 import {Signal0} from "core/signaling"
 import type {Arrayable, Color, uint32, RGBAArray} from "core/types"
 import {ColorArray} from "core/types"
+import {unreachable} from "core/util/assert"
 import {color2rgba, encode_rgba} from "core/util/color"
 import {to_big_endian} from "core/util/platform"
 import type {NDArrayType} from "core/util/ndarray"
@@ -90,6 +97,22 @@ export abstract class ColorMapper extends Mapper<Color> {
   // The mapper that defines how this mapper is displayed, e.g. in a color bar.
   get display_mapper(): ColorMapper {
     return this
+  }
+
+  create_ticker(): Ticker {
+    return BasicTicker.create()
+  }
+
+  create_formatter(): TickFormatter {
+    return BasicTickFormatter.create()
+  }
+
+  create_range(_extent: DisplayExtent): Range {
+    unreachable()
+  }
+
+  create_scale(_extent: DisplayExtent): Scale {
+    unreachable()
   }
 
   display_extent(_display_low: number | null, _display_high: number | null): DisplayExtent {

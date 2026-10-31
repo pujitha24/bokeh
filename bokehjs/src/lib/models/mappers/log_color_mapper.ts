@@ -1,4 +1,8 @@
 import {ContinuousColorMapper} from "./continuous_color_mapper"
+import type {Scale} from "../scales/scale"
+import {LogScale} from "../scales/log_scale"
+import type {Ticker} from "../tickers/ticker"
+import {LogTicker} from "../tickers/log_ticker"
 import type {Arrayable} from "core/types"
 import {logger} from "core/logging"
 import {min, max} from "core/util/arrayable"
@@ -22,6 +26,14 @@ export interface LogColorMapper extends LogColorMapper.Attrs {}
 
 export class LogColorMapper extends ContinuousColorMapper {
   declare properties: LogColorMapper.Props
+
+  override create_ticker(): Ticker {
+    return LogTicker.create()
+  }
+
+  override create_scale(): Scale {
+    return LogScale.create()
+  }
 
   protected scan(data: Arrayable<number>, n: number): LogScanData {
     const low = this.low != null ? this.low : min(data)

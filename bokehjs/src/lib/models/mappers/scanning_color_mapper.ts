@@ -1,5 +1,8 @@
 import type {ContinuousDisplayExtent} from "./continuous_color_mapper"
 import {ContinuousColorMapper} from "./continuous_color_mapper"
+import type {Scale} from "../scales/scale"
+import {LinearInterpolationScale} from "../scales/linear_interpolation_scale"
+import type {Ticker} from "../tickers/ticker"
 import type {Arrayable, uint32} from "core/types"
 import {left_edge_index} from "core/util/arrayable"
 import type * as p from "core/properties"
@@ -25,6 +28,13 @@ export abstract class ScanningColorMapper extends ContinuousColorMapper {
   declare properties: ScanningColorMapper.Props
 
   declare MetricsType: {min: number, max: number, binning: Arrayable<number>, force_low_cutoff: boolean}
+
+  // Implemented by subclasses, because BinnedTicker depends on this module.
+  abstract override create_ticker(): Ticker
+
+  override create_scale({binning}: ScanningDisplayExtent): Scale {
+    return LinearInterpolationScale.create({binning})
+  }
 
   override display_extent(display_low: number | null, display_high: number | null): ScanningDisplayExtent {
     const {start, end} = super.display_extent(display_low, display_high)

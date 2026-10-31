@@ -1,18 +1,16 @@
 import {BaseColorBar, BaseColorBarView} from "./base_color_bar"
 import type {TickFormatter} from "../formatters/tick_formatter"
-import {BasicTickFormatter, LogTickFormatter, CategoricalTickFormatter} from "../formatters"
+import {LogTickFormatter} from "../formatters"
 import type {DisplayExtent} from "../mappers/color_mapper"
 import {ColorMapper, palette_to_rgba} from "../mappers/color_mapper"
-import {LinearColorMapper, LogColorMapper, ScanningColorMapper, CategoricalColorMapper, ContinuousColorMapper} from "../mappers"
 import type {Range} from "../ranges"
-import {Range1d, FactorRange} from "../ranges"
+import {Range1d} from "../ranges"
 import type {Scale} from "../scales"
-import {LinearScale, LogScale, LinearInterpolationScale, CategoricalScale} from "../scales"
+import {LinearInterpolationScale} from "../scales"
 import type {Ticker} from "../tickers/ticker"
-import {BasicTicker, LogTicker, BinnedTicker, CategoricalTicker} from "../tickers"
+import {LogTicker} from "../tickers"
 import type * as p from "core/properties"
 import {reversed} from "core/util/array"
-import {unreachable} from "core/util/assert"
 import type {BBox} from "core/util/bbox"
 import type {Context2d} from "core/util/canvas"
 
@@ -51,14 +49,10 @@ export class ColorBarView extends BaseColorBarView {
   }
 
   override _create_formatter(): TickFormatter {
-    const {color_mapper} = this
-
     if (this._ticker instanceof LogTicker) {
       return LogTickFormatter.create()
-    } else if (color_mapper instanceof CategoricalColorMapper) {
-      return CategoricalTickFormatter.create()
     } else {
-      return BasicTickFormatter.create()
+      return this.color_mapper.create_formatter()
     }
   }
 
@@ -72,47 +66,15 @@ export class ColorBarView extends BaseColorBarView {
     Note: the type of color_mapper has to match the type of scale (i.e.
     a LinearColorMapper will require a corresponding LinearScale instance).
     */
-    const {color_mapper} = this
-
-    if (color_mapper instanceof CategoricalColorMapper) {
-      return FactorRange.create({factors: color_mapper.factors})
-    } else if (color_mapper instanceof ContinuousColorMapper) {
-      const {start, end} = this._display_extent()
-      return Range1d.create({start, end})
-    } else {
-      unreachable()
-    }
+    return this.color_mapper.create_range(this._display_extent())
   }
 
   override _create_major_scale(): Scale {
-    const {color_mapper} = this
-
-    if (color_mapper instanceof LinearColorMapper) {
-      return LinearScale.create()
-    } else if (color_mapper instanceof LogColorMapper) {
-      return LogScale.create()
-    } else if (color_mapper instanceof ScanningColorMapper) {
-      const {binning} = this._display_extent()
-      return LinearInterpolationScale.create({binning})
-    } else if (color_mapper instanceof CategoricalColorMapper) {
-      return CategoricalScale.create()
-    } else {
-      unreachable()
-    }
+    return this.color_mapper.create_scale(this._display_extent())
   }
 
   override _create_ticker(): Ticker {
-    const {color_mapper} = this
-
-    if (color_mapper instanceof LogColorMapper) {
-      return LogTicker.create()
-    } else if (color_mapper instanceof ScanningColorMapper) {
-      return BinnedTicker.create({mapper: color_mapper})
-    } else if (color_mapper instanceof CategoricalColorMapper) {
-      return CategoricalTicker.create()
-    } else {
-      return BasicTicker.create()
-    }
+    return this.color_mapper.create_ticker()
   }
 
   // Return the displayed extent of the color mapper, accounting for low and
