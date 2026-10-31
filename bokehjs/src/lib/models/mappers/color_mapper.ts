@@ -14,7 +14,7 @@ import {unreachable} from "core/util/assert"
 import {color2rgba, encode_rgba} from "core/util/color"
 import {to_big_endian} from "core/util/platform"
 import type {NDArrayType} from "core/util/ndarray"
-import {is_NDArray, Uint32NDArray} from "core/util/ndarray"
+import {Uint32NDArray} from "core/util/ndarray"
 
 export interface RGBAMapper {
   v_compute(xs: Arrayable<number> | NDArrayType<number> | Arrayable<Factor> | NDArrayType<Factor>): RGBAArray
@@ -85,13 +85,17 @@ export abstract class ColorMapper extends Mapper<Color> {
     const colors = this._colors(convert_to_uint32_color)
     return {
       v_compute(xs) {
-        const length_divisor = is_NDArray(xs) && xs.dimension == 3 ? xs.shape[2] : 1
-        const values = new ColorArray(xs.length / length_divisor)
+        const values = new ColorArray(self._output_length(xs))
         self._v_compute(xs, values, palette, colors)
         to_big_endian(values)
         return new Uint8ClampedArray(values.buffer)
       },
     }
+  }
+
+  // The number of colors produced from `xs`.
+  protected _output_length(xs: Arrayable<unknown>): number {
+    return xs.length
   }
 
   // The mapper that defines how this mapper is displayed, e.g. in a color bar.

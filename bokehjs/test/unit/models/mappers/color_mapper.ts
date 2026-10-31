@@ -1,6 +1,8 @@
 import {expect} from "#framework/assertions"
 
+import {Float64NDArray} from "@bokehjs/core/util/ndarray"
 import {convert_to_uint32_color, convert_to_uint32_palette} from "@bokehjs/models/mappers/color_mapper"
+import {LinearColorMapper} from "@bokehjs/models/mappers/linear_color_mapper"
 
 describe("ColorMapper module", () => {
 
@@ -15,5 +17,11 @@ describe("ColorMapper module", () => {
     const palette = ["red", "green", "blue", "#31a354", "#addd8e", "#F7FCB9"]
     const expected = Uint32Array.of(0xff0000ff, 0x008000ff, 0x0000ffff, 0x31a354ff, 0xaddd8eff, 0xf7fcb9ff)
     expect(convert_to_uint32_palette(palette)).to.be.equal(expected)
+  })
+
+  it("should produce one color per value in rgba_mapper unless stacking", () => {
+    const color_mapper = LinearColorMapper.create({palette: ["red", "blue"], low: 0, high: 1})
+    const rgba = color_mapper.rgba_mapper.v_compute(new Float64NDArray([0, 1], [1, 1, 2]))
+    expect([...rgba]).to.be.equal([255, 0, 0, 255, 0, 0, 255, 255])
   })
 })
